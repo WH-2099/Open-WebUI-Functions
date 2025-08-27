@@ -189,7 +189,7 @@ class Pipe:
             )
         else:
             self.log.debug("Initializing Google Generative AI client with API Key")
-            return genai.Client(api_key=self.valves.GOOGLE_API_KEY.get_decrypted())
+            return genai.Client(api_key=self.valves.GOOGLE_API_KEY)
 
     def _validate_api_key(self) -> None:
         """
@@ -1077,4 +1077,5 @@ class Pipe:
 
             # Return a user-friendly error message
             return f"An error occurred while processing your request: {e}"
+
 
