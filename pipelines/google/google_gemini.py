@@ -162,7 +162,7 @@ class Pipe:
     def __init__(self):
         """Initializes the Pipe instance and configures the genai library."""
         self.valves = self.Valves()
-        self.name: str = "Google Gemini: "
+        self.name: str = ""
 
         # Setup logging
         self.log = logging.getLogger("google_ai.pipe")
@@ -290,7 +290,7 @@ class Pipe:
             List of dictionaries containing model id and name.
         """
         try:
-            self.name = "Google Gemini: "
+            self.name = ""
             return self.get_google_models()
         except ValueError as e:
             # Handle the case where API key is missing during pipe listing
@@ -1077,5 +1077,6 @@ class Pipe:
 
             # Return a user-friendly error message
             return f"An error occurred while processing your request: {e}"
+
 
 
