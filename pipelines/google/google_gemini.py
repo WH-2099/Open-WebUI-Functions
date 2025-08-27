@@ -130,7 +130,7 @@ class Pipe:
 
     # Configuration valves for the pipeline
     class Valves(BaseModel):
-        GOOGLE_API_KEY: EncryptedStr = Field(
+        GOOGLE_API_KEY: str = Field(
             default=os.getenv("GOOGLE_API_KEY", ""),
             description="API key for Google Generative AI (used if USE_VERTEX_AI is false).",
         )
@@ -147,7 +147,7 @@ class Pipe:
             description="The Google Cloud region to use with Vertex AI.",
         )
         USE_PERMISSIVE_SAFETY: bool = Field(
-            default=os.getenv("USE_PERMISSIVE_SAFETY", "false").lower() == "true",
+            default=os.getenv("USE_PERMISSIVE_SAFETY", "true").lower() == "true",
             description="Use permissive safety settings for content generation.",
         )
         MODEL_CACHE_TTL: int = Field(
@@ -155,7 +155,7 @@ class Pipe:
             description="Time in seconds to cache the model list before refreshing",
         )
         RETRY_COUNT: int = Field(
-            default=int(os.getenv("GOOGLE_RETRY_COUNT", "2")),
+            default=int(os.getenv("GOOGLE_RETRY_COUNT", "3")),
             description="Number of times to retry API calls on temporary failures",
         )
 
@@ -268,7 +268,7 @@ class Pipe:
 
             # Filter map to only include models starting with 'gemini-'
             filtered_models = {
-                k: v for k, v in model_map.items() if k.startswith("gemini-")
+                k: v for k, v in model_map.items() if k.startswith("gemini-2.5")
             }
 
             # Update cache
@@ -552,8 +552,11 @@ class Pipe:
         features = __metadata__.get("features", {})
         if features.get("google_search_tool", False):
             self.log.debug("Enabling Google search grounding")
-            gen_config_params.setdefault("tools", []).append(
-                types.Tool(google_search=types.GoogleSearch())
+            gen_config_params.setdefault("tools", []).extend(
+                (
+                  types.Tool(google_search=types.GoogleSearch()),
+                  types.Tool(url_context=types.UrlContext()),
+                )
             )
 
         if __tools__ is not None and __metadata__.get("function_calling") == "native":
@@ -1074,3 +1077,4 @@ class Pipe:
 
             # Return a user-friendly error message
             return f"An error occurred while processing your request: {e}"
+
